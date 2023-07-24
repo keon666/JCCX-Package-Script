@@ -11,7 +11,10 @@ import subprocess
 
 scriptRoot = os.path.split(os.path.realpath(__file__))[0]
 packageRoot = os.path.split(scriptRoot)[0]
-engineRoot = os.path.split(packageRoot)[0]
+engineRoot = None
+recordFile = os.path.join('..', 'record', 'encrypt_lua_record.jccx')
+recordDic = {}
+curRecordDic = {}
 
 jitPath = ""
 new_env = os.environ.copy()
@@ -53,7 +56,8 @@ def getfiles(src, dest):
         nSrc = utils.joinDir(src, item)
         nDest = utils.joinDir(dest, item)
         if os.path.isfile(nSrc) and isLuaFile(nSrc):
-            files.append((nSrc, nDest))
+            if __isChange(nSrc):
+                files.append((nSrc, nDest))
         else:
             getfiles(nSrc, nDest)
 
@@ -67,6 +71,21 @@ def __doFile(src, dest):
     cmd = subprocess.Popen(jitcmd, shell = True, stdout = subprocess.PIPE, env = new_env)
     cmd.wait()
 
+def __isChange(file):
+    b = False
+    md5 = utils.calcMD5(file)
+    path = utils.adaptPath(file)
+    pos = path.find('../src/')+3
+    key = path[pos:]
+    if recordDic.get(key):
+        oldMd5 = recordDic[key]['md5']
+        if oldMd5 != md5:
+            b = True
+    else:
+        b = True
+    curRecordDic[key] = {'md5':md5}
+    return b
+
 def run():
     with alive_bar(len(files)) as bar:
         with cf.ThreadPoolExecutor() as p:
@@ -74,10 +93,11 @@ def run():
                 p.submit(__doFile, src, dest).add_done_callback(lambda func: bar())
 
 if __name__ == '__main__':
-    print('::::::::::开始处理脚本加密::::::::')
-    print('scriptRoot=', scriptRoot)
-    print('packageRoot=', packageRoot)
-    print('engineRoot=', engineRoot)
+    print('::::::::::③开始处理脚本加密::::::::')
+    engineRoot = utils.joinDir(scriptRoot, '..', '..')
+    # print('scriptRoot=', scriptRoot)
+    # print('packageRoot=', packageRoot)
+    # print('engineRoot=', engineRoot)
     initJitPath('64')
 
     src = utils.joinDir(engineRoot, 'src', 'app', 'login')
@@ -85,8 +105,8 @@ if __name__ == '__main__':
     if not os.path.exists(dest):
         os.mkdir(dest)
 
-    print('=======获取lua文件=========')
+    recordDic = utils.loadRecord(recordFile)
     getfiles(src, dest)
-    print('==========开始加密=========')
     run()
-    print('=======加密完成!!!=========')
+    utils.generateRecord(recordFile, curRecordDic)
+    print('::::::::::开始处理脚本加密end::::::::')
