@@ -24,6 +24,8 @@ def getfiles(src, dest):
             if __isChange(nSrc):
                 files.append((nSrc, nDest))
         else:
+            if not os.path.exists(nDest):
+                os.mkdir(nDest)
             getfiles(nSrc, nDest)
 
 def __isChange(file):
@@ -42,9 +44,6 @@ def __isChange(file):
     return b
 
 def __convert(src, dest):
-    dir = os.path.split(dest)[0]
-    if not os.path.exists(dir):
-        os.mkdir(dir)
     dest = os.path.splitext(dest)[0] + '.ogg'
 
     cmd_str = '%s -y -i %s -acodec libvorbis -ab 96k -loglevel quiet %s' %(ffmpegPath, src, dest)
@@ -63,8 +62,8 @@ if __name__ == '__main__':
     # print('scriptRoot=', scriptRoot)
     # print('engineRoot=', engineRoot)
 
-    src = utils.joinDir(engineRoot, 'res', 'audio', 'bgm')
-    dest = utils.joinDir(scriptRoot, '..', 'assets', 'res', 'audio', 'bgm')
+    src = utils.joinDir(engineRoot, 'res', 'audio')
+    dest = utils.joinDir(scriptRoot, '..', 'assets', 'res', 'audio')
     if not os.path.exists(dest):
         os.makedirs(dest)
 

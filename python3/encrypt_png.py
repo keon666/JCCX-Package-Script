@@ -21,12 +21,11 @@ def getfiles(src, dest):
         if os.path.isfile(nSrc) and __isChange(nSrc):
             files.append((nSrc, nDest))
         else:
+            if not os.path.exists(nDest):
+                os.mkdir(nDest)
             getfiles(nSrc, nDest)
 
 def __copyFile(src, dest):
-    dir = os.path.split(dest)[0]
-    if not os.path.exists(dir):
-        os.mkdir(dir)
     if utils.checkFileExt(src):
         inFp = open(src, 'rb')
         buff = inFp.read()
@@ -70,13 +69,19 @@ if __name__ == '__main__':
     # print('scriptRoot=', scriptRoot)
     # print('engineRoot=', engineRoot)
 
-    src = utils.joinDir(engineRoot, 'res', 'texture', 'common', 'other')
-    dest = utils.joinDir(scriptRoot, '..', 'res')
+    src = utils.joinDir(engineRoot, 'res')
+    dest = utils.joinDir(scriptRoot, '..', 'assets', 'res')
     if not os.path.exists(dest):
-        os.mkdir(dest)
+        os.makedirs(dest)
 
     recordDic = utils.loadRecord(recordFile)
-    getfiles(src, dest)
+    arr = ['ccs', 'font', 'live2d', 'particle', 'spine', 'texture', 'video']
+    for item in arr:
+        src2 = utils.joinDir(src, item)
+        dest2 = utils.joinDir(dest, item)
+        if not os.path.exists(dest2):
+            os.mkdir(dest2)
+        getfiles(src2, dest2)
     run()
     utils.generateRecord(recordFile, curRecordDic)
     print('::::::::::处理图片加密end::::::::')

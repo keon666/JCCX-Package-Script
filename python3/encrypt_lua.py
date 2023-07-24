@@ -8,6 +8,7 @@ import sys
 import concurrent.futures as cf
 from alive_progress import alive_bar
 import subprocess
+import shutil
 
 scriptRoot = os.path.split(os.path.realpath(__file__))[0]
 packageRoot = os.path.split(scriptRoot)[0]
@@ -53,23 +54,29 @@ def isLuaFile(file):
 
 def getfiles(src, dest):
     for item in os.listdir(src):
+        if item[0] == '.':
+            continue
         nSrc = utils.joinDir(src, item)
         nDest = utils.joinDir(dest, item)
-        if os.path.isfile(nSrc) and isLuaFile(nSrc):
-            if __isChange(nSrc):
+        if os.path.isfile(nSrc):
+            if isLuaFile(nSrc) and __isChange(nSrc):
                 files.append((nSrc, nDest))
         else:
+            if not os.path.exists(nDest):
+                os.mkdir(nDest)
             getfiles(nSrc, nDest)
 
 def __doFile(src, dest):
-    dir = os.path.split(dest)[0]
-    if not os.path.exists(dir):
-        os.mkdir(dir)
-
     dest2 = os.path.splitext(dest)[0] + '.luac'
-    jitcmd = '%s -bg "%s" "%s"' %(jitPath, src, dest2)
-    cmd = subprocess.Popen(jitcmd, shell = True, stdout = subprocess.PIPE, env = new_env)
-    cmd.wait()
+    try:
+        jitcmd = '%s -bg "%s" "%s"' %(jitPath, src, dest2)
+        cmd = subprocess.Popen(jitcmd, shell = True, stdout = subprocess.PIPE, env = new_env)
+        cmd.wait()
+    except Exception as e:
+        print(e)
+
+    if not os.path.exists(dest2):
+        shutil.copyfile(src, dest)
 
 def __isChange(file):
     b = False
@@ -100,10 +107,10 @@ if __name__ == '__main__':
     # print('engineRoot=', engineRoot)
     initJitPath('64')
 
-    src = utils.joinDir(engineRoot, 'src', 'app', 'login')
-    dest = utils.joinDir(packageRoot, 'luac')
+    src = utils.joinDir(engineRoot, 'src')
+    dest = utils.joinDir(packageRoot, 'assets', 'src')
     if not os.path.exists(dest):
-        os.mkdir(dest)
+        os.makedirs(dest)
 
     recordDic = utils.loadRecord(recordFile)
     getfiles(src, dest)
