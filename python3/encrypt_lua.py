@@ -100,7 +100,7 @@ def run():
                 p.submit(__doFile, src, dest).add_done_callback(lambda func: bar())
 
 if __name__ == '__main__':
-    print('::::::::::③开始处理脚本加密::::::::')
+    print('::::::::::一、开始处理脚本加密::::::::')
     engineRoot = utils.joinDir(scriptRoot, '..', '..')
     # print('scriptRoot=', scriptRoot)
     # print('packageRoot=', packageRoot)

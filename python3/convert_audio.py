@@ -57,7 +57,7 @@ def run():
                 p.submit(__convert, src, dest).add_done_callback(lambda func: bar())
 
 if __name__ == '__main__':
-    print('::::::::::①开始处理音频转换::::::::')
+    print('::::::::::二、开始处理音频转换::::::::')
     engineRoot = utils.joinDir(scriptRoot, '..', '..')
     # print('scriptRoot=', scriptRoot)
     # print('engineRoot=', engineRoot)

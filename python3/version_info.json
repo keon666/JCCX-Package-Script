@@ -1,0 +1,11 @@
+{
+	"packageUrl" : "http://rgx.jiaocuocanxiang.cn/game/beta/",
+	"remoteManifestUrl" : "http://rgx.jiaocuocanxiang.cn/game/beta/project.manifest",
+	"remoteVersionUrl" : "http://rgx.jiaocuocanxiang.cn/game/beta/version.manifest",
+	"version" : "1.0.0",
+	"engineVersion" : "Cocos2dx-lua 3.6.5",
+	"assets" : {
+	},
+	"searchPaths" : [
+	]
+}

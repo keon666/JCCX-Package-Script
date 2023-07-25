@@ -64,7 +64,7 @@ def run():
                 p.submit(__copyFile, src, dest).add_done_callback(lambda func: bar())
 
 if __name__ == '__main__':
-    print('::::::::::②开始处理图片加密::::::::')
+    print('::::::::::三、开始处理图片加密::::::::')
     engineRoot = utils.joinDir(scriptRoot, '..', '..')
     # print('scriptRoot=', scriptRoot)
     # print('engineRoot=', engineRoot)

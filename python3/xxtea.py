@@ -69,14 +69,25 @@ def _decrypt(str, key):
     return _long2str(v, True)
 
 def encrypt(buff):
-    return SIGN.encode("ISO8859-1") + _encrypt(buff.decode("ISO8859-1"), KEY)
+    if isinstance(buff, bytes):
+        return __str2bytes(SIGN) + _encrypt(__bytes2str(buff), KEY)
+    return __str2bytes(SIGN) + _encrypt(buff, KEY)
+
+def __bytes2str(buff):
+    return buff.decode("ISO8859-1")
+
+def __str2bytes(buff):
+    return buff.encode("ISO8859-1")
 
 def decrypt(buff):
+    if isinstance(buff, bytes):
+        buff = __bytes2str(buff)
+
     n = len(SIGN)
     if buff[0:n] != SIGN:
         return buff
     buff = buff[n:]
-    return _decrypt(buff.decode("ISO8859-1"), KEY)
+    return _decrypt(buff, KEY)
 
 def show():
     print('sign=%s, key=%s' % (SIGN, KEY))
